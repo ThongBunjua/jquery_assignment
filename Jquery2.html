@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    
+    <style>
+        body {
+            background-color: #e9e9e9; 
+            padding: 30px;
+        }
+        .dashboard-container {
+            max-width: 800px; 
+            margin: 0 auto; 
+            background-color: white; 
+            padding: 20px 20px 40px 20px;
+            border-radius: 5px; 
+        }
+        h2.user-list-header {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: bold; 
+        }
+        .table-header-row th {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px !important;
+            font-weight: bold; 
+        }
+        .table {
+            border-collapse: collapse;
+        }
+        #userTableBody tr td {
+             border-top: none; 
+             padding-top: 10px;
+             padding-bottom: 10px;
+        }
+        #toggleNewUserModal {
+            background-color: #007bff;
+            border-color: #007bff;
+            margin-top: 20px; 
+        }
+        #submitNewUser {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <h2 class="user-list-header">User List</h2>
+
+        <div class="user-table-wrapper">
+            <table class="table mb-0">
+                <thead>
+                    <tr class="table-header-row">
+                        <th scope="col" style="width: 30%;">Username</th>
+                        <th scope="col" style="width: 35%;">Fullname</th>
+                        <th scope="col" style="width: 35%;">Email</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+        <div class="table-responsive">
+             <table class="table table-hover">
+                <tbody id="userTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <button id="toggleNewUserModal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newUserModal">
+            New User
+        </button>
+    </div>
+
+    <div class="modal fade" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newUserModalLabel">New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newUserForm">
+                        <div class="mb-3">
+                            <label for="newUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="newUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newFullname" class="form-label">Fullname</label>
+                            <input type="text" class="form-control" id="newFullname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="newEmail" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success" id="submitNewUser">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            let users = [];
+
+            const $userTableBody = $('#userTableBody');
+            const newUserModalElement = document.getElementById('newUserModal');
+            const newUserModalInstance = bootstrap.Modal.getOrCreateInstance(newUserModalElement);
+            const $newUserForm = $('#newUserForm');
+
+            function renderUsers() {
+                $userTableBody.empty(); 
+                
+                if (users.length === 0) {
+                    return;
+                }
+
+                users.forEach(user => {
+                    const row = `
+                        <tr>
+                            <td>${user.username}</td>
+                            <td>${user.fullname}</td>
+                            <td>${user.email}</td>
+                        </tr>
+                    `;
+                    $userTableBody.append(row);
+                });
+            }
+
+            $('#submitNewUser').on('click', function() {
+                const newUsername = $('#newUsername').val().trim();
+                const newFullname = $('#newFullname').val().trim();
+                const newEmail = $('#newEmail').val().trim();
+
+                if (!newUsername || !newFullname || !newEmail) {
+                    alert("Please fill out all fields in the modal.");
+                    return;
+                }
+
+                const newUser = {
+                    username: newUsername,
+                    fullname: newFullname,
+                    email: newEmail
+                };
+                users.push(newUser);
+
+                $newUserForm[0].reset(); 
+                
+                newUserModalInstance.hide(); 
+
+                renderUsers();
+
+                console.log(`User ${newUsername} successfully added.`);
+            });
+
+            renderUsers();
+        });
+    </script>
+</body>
+</html>
